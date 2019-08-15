@@ -5,22 +5,22 @@ require_relative './company_info.rb'
 class Train 
   include InstanceCounter, InstanceList, CompanyInfo
 
-  VALID_ID = /^ \w{3} (|-\w{2}) $/x
-
   attr_reader :id, :route
 
   def initialize(id)
     @id = id
-    raise "invalid train id!" unless valid? 
+    validate!
     @carriages = []
     self.class.register_instance
     self.register_instance_in_list
   end
 
-  def valid?
-    return true if id =~ VALID_ID
+  def valid? 
+    validate!
+    true
+  rescue
     false
-  end
+  end 
 
   def self.find(id)
     instance_list.select { |train| train.id == id }.first
@@ -69,8 +69,19 @@ class Train
 
   protected 
 
+  VALID_ID = /^ \w{3} (|-\w{2}) $/x
+  
   attr_reader  :carriages
   attr_accessor :current_station_index
+  
+  def validate!
+    validate_train_id!
+  end
+
+  def validate_train_id!
+    raise "invalid train id!" unless id =~ VALID_ID
+  end
+
   #или лучше private?
   def go(station)
     if station

@@ -8,8 +8,8 @@ class Station
 
   def initialize(name)
     @name = name
-    raise "invalid station name!" unless valid? 
     @trains = [] 
+    validate!
     self.class.register_instance
     self.register_instance_in_list
   end
@@ -17,10 +17,13 @@ class Station
   def self.all
     instance_list
   end
- 
-  def valid?
-    !(name !~ /.{2,}/)
-  end
+  
+  def valid? 
+    validate!
+    true
+  rescue
+    false
+  end 
 
   def trains_by_type(type)
     return trains.collect { |train|  train if train.type == type }  
@@ -32,5 +35,15 @@ class Station
 
   def depart_train(train)
     trains.delete(train) if trains.include?(train)
+  end
+
+  protected
+
+  def validate!
+    validate_name!
+  end
+
+  def validate_name!
+    raise "invalid station name!" if name !~ /.{2,}/
   end
 end

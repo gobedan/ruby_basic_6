@@ -7,12 +7,15 @@ class Route
 
   def initialize(first, last)
     @route_list = [first, last]
-    raise "Invalid station in route!" unless valid? 
+    validate! 
     self.class.register_instance
   end
 
   def valid? 
-    route_list[0] && route_list[1]
+    validate!
+    true
+  rescue
+    false
   end 
 
   def add_station(station)
@@ -21,5 +24,15 @@ class Route
 
   def remove_station(station)
     route_list.delete(station) if route_list.size > 2 
+  end
+
+  protected
+
+  def validate!
+    validate_start_end_station!
+  end
+  
+  def validate_start_end_station! 
+    raise "Invalid station in route!" unless route_list[0] && route_list[1]
   end
 end
